@@ -1,0 +1,802 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Product",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/"
+    },
+    {
+      "url": "https://example.com/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Операции над пользователями"
+    }
+  ],
+  "paths": {
+    "/server/api/users": {
+      "get": {
+        "summary": "Возвращает список пользователей",
+        "description": "**Права доступа:** `Администратор`\n",
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lim",
+            "in": "query",
+            "description": "Сколько результатов вернётся на одной странице",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "nullable": true,
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Номер страницы",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "nullable": true,
+              "default": null
+            }
+          },
+          {
+            "in": "query",
+            "name": "login",
+            "description": "Логин пользователя",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "login_part",
+            "description": "Часть логина пользователя",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "user_type",
+            "description": "Тип пользователя",
+            "schema": {
+              "title": "Типы пользователей",
+              "type": "string",
+              "description": "Значения:\n  * `regular` - Обычный пользователь<br><br>\n  * `moderator` - Модератор<br><br>\n  * `admin` - Администратор<br><br>\n",
+              "enum": [
+                "regular",
+                "moderator",
+                "admin"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "description": "Статус пользователя\n\n  * `0` - Пользователь активен <br><br>\n  * `1` - Пользователь заблокирован<br><br>\n",
+            "schema": {
+              "title": "Статусы пользователей",
+              "description": "Значения:\n  * `1` - Пользователь заблокирован<br><br>\n  * `0` - Пользователь активен<br><br>\n",
+              "type": "integer",
+              "enum": [
+                1,
+                0
+              ]
+            },
+            "example": null
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Сортировка [<Параметр>, <asc/desc>]",
+            "schema": {
+              "type": "string"
+            },
+            "examples": {
+              "login": {
+                "value": "[login, asc]"
+              },
+              "user_type": {
+                "value": "[user_type, asc]"
+              },
+              "state": {
+                "value": "[state, asc]"
+              },
+              "date_create": {
+                "value": "[date_create, asc]"
+              },
+              "company_id": {
+                "value": "[company_id, asc]"
+              },
+              "email": {
+                "value": "[email, asc]"
+              },
+              "need_change_pwd": {
+                "value": "[need_change_pwd, asc]"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "fields",
+            "description": "Возвращаемые поля:\nПри передаче пустого массива `[]` вернутся все поля\nДля выбора необходимых полей используйте массив из следующих элементов:\n\n  * `id` - Иднентификатор пользователя <br><br>\n  * `login` - Логин пользователя <br><br>\n  * `date_create` - Дата создания пользователя <br><br>\n  * `email` - Enail пользователя <br><br>\n  * `state` - Состояние пользователя <br><br>\n  * `user_type` - Тип пользователя <br><br>\n",
+            "schema": {
+              "type": "string",
+              "example": "[id,login]"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application-json": {
+                "schema": {
+                  "title": "Успешный ответ",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "res"
+                      ],
+                      "properties": {
+                        "res": {
+                          "title": "Возвращаемый результат",
+                          "allOf": [
+                            {
+                              "title": "Пагинация",
+                              "type": "object",
+                              "required": [
+                                "lim",
+                                "page",
+                                "pages_total",
+                                "results_total"
+                              ],
+                              "properties": {
+                                "lim": {
+                                  "description": "Размер страницы",
+                                  "type": "integer",
+                                  "nullable": false,
+                                  "example": 10
+                                },
+                                "page": {
+                                  "description": "Номер страницы",
+                                  "type": "integer",
+                                  "nullable": true,
+                                  "example": 1
+                                },
+                                "pages_total": {
+                                  "description": "Общее число страниц",
+                                  "type": "integer",
+                                  "nullable": true,
+                                  "example": 1
+                                },
+                                "results_total": {
+                                  "description": "Общее число результатов",
+                                  "type": "integer",
+                                  "nullable": true,
+                                  "example": 1
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "required": [
+                                "users"
+                              ],
+                              "properties": {
+                                "users": {
+                                  "title": "Список пользователей",
+                                  "description": "Сортировка по-умолчанию по полю `date_create`\n",
+                                  "type": "array",
+                                  "items": {
+                                    "title": "Информация о пользователе",
+                                    "type": "object",
+                                    "required": [
+                                      "date_create",
+                                      "email",
+                                      "id",
+                                      "login",
+                                      "state",
+                                      "user_type"
+                                    ],
+                                    "properties": {
+                                      "date_create": {
+                                        "allOf": [
+                                          {
+                                            "description": "Дата создания пользователя"
+                                          },
+                                          {
+                                            "title": "Объект даты-времени таймзоной в ISO-формате",
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2021-06-23T12:00:01+05:00"
+                                          }
+                                        ]
+                                      },
+                                      "email": {
+                                        "description": "Email пользователя",
+                                        "type": "string",
+                                        "example": "user@sbermed.ai"
+                                      },
+                                      "id": {
+                                        "description": "Идентификатора пользователя",
+                                        "type": "integer",
+                                        "example": 47
+                                      },
+                                      "login": {
+                                        "description": "Логин пользователя",
+                                        "type": "string",
+                                        "example": "user_1"
+                                      },
+                                      "state": {
+                                        "title": "Статусы пользователей",
+                                        "description": "Значения:\n  * `1` - Пользователь заблокирован<br><br>\n  * `0` - Пользователь активен<br><br>\n",
+                                        "type": "integer",
+                                        "enum": [
+                                          1,
+                                          0
+                                        ]
+                                      },
+                                      "user_type": {
+                                        "title": "Типы пользователей",
+                                        "type": "string",
+                                        "description": "Значения:\n  * `regular` - Обычный пользователь<br><br>\n  * `moderator` - Модератор<br><br>\n  * `admin` - Администратор<br><br>\n",
+                                        "enum": [
+                                          "regular",
+                                          "moderator",
+                                          "admin"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "title": "Код ошибки и комментарий",
+                      "type": "object",
+                      "required": [
+                        "error_code",
+                        "comments",
+                        "additional_info"
+                      ],
+                      "properties": {
+                        "error_code": {
+                          "description": "Код ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "comments": {
+                          "description": "Описание ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "additional_info": {
+                          "description": "Дополнительная информация для фронта",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "**Unauthorized**\n  | Код ошибки | Описание | \n  |-|-| \n  | `wrong-token` | Просроченный/некорректный токен авторизации |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "**Forbidden**\n  | Код ошибки | Описание | \n  |-|-| \n  | `forbidden` | Полный запрет на выполнение операции |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создает пользователя",
+        "description": "**Права доступа:** `Администратор`\n",
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Информация о пользователе",
+                "type": "object",
+                "required": [
+                  "email",
+                  "id",
+                  "login",
+                  "user_type"
+                ],
+                "properties": {
+                  "email": {
+                    "description": "Email пользователя",
+                    "type": "string",
+                    "example": "user@sbermed.ai"
+                  },
+                  "login": {
+                    "description": "Логин пользователя",
+                    "type": "string",
+                    "example": "user_1"
+                  },
+                  "user_type": {
+                    "title": "Типы пользователей",
+                    "type": "string",
+                    "description": "Значения:\n  * `regular` - Обычный пользователь<br><br>\n  * `moderator` - Модератор<br><br>\n  * `admin` - Администратор<br><br>\n",
+                    "enum": [
+                      "regular",
+                      "moderator",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application-json": {
+                "schema": {
+                  "title": "Успешный ответ",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "res"
+                      ],
+                      "properties": {
+                        "res": {
+                          "title": "Информация о пользователе",
+                          "type": "object",
+                          "required": [
+                            "user_id",
+                            "login",
+                            "pwd"
+                          ],
+                          "properties": {
+                            "user_id": {
+                              "description": "Идентификатора пользователя",
+                              "type": "integer",
+                              "example": 47
+                            },
+                            "login": {
+                              "description": "Логин пользователя",
+                              "type": "string",
+                              "example": "user_1"
+                            },
+                            "pwd": {
+                              "description": "Пароль пользователя",
+                              "type": "string",
+                              "example": "$tr0ng_p@$$w0rD"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "title": "Код ошибки и комментарий",
+                      "type": "object",
+                      "required": [
+                        "error_code",
+                        "comments",
+                        "additional_info"
+                      ],
+                      "properties": {
+                        "error_code": {
+                          "description": "Код ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "comments": {
+                          "description": "Описание ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "additional_info": {
+                          "description": "Дополнительная информация для фронта",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "**Bad Request**\n  | Код ошибки | Описание | \n  |-|-| \n  | `wrong-data` | Неверные параметры запроса, неверные данные в параметрах запроса |\n  | `wrong-field-format` | Неверный формат поля запроса | \n  | `required-field-missing` | В запросе отсутствует обязательное поле |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "**Unauthorized**\n  | Код ошибки | Описание | \n  |-|-| \n  | `wrong-token` | Просроченный/некорректный токен авторизации |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/server/api/users/{user_id}": {
+      "patch": {
+        "summary": "Изменяет Email пользователя",
+        "description": "**Права доступа:** `Администратор`\n",
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Изменение Email пользователя",
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "description": "Email пользователя",
+                    "type": "string",
+                    "example": "user@sbermed.ai"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application-json": {
+                "schema": {
+                  "title": "Стандартный ответ",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "res"
+                      ],
+                      "properties": {
+                        "res": {
+                          "title": "Возвращаемый результат",
+                          "type": "object",
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    },
+                    {
+                      "title": "Код ошибки и комментарий",
+                      "type": "object",
+                      "required": [
+                        "error_code",
+                        "comments",
+                        "additional_info"
+                      ],
+                      "properties": {
+                        "error_code": {
+                          "description": "Код ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "comments": {
+                          "description": "Описание ошибки",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "additional_info": {
+                          "description": "Дополнительная информация для фронта",
+                          "type": "string",
+                          "nullable": true,
+                          "example": null
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "**Bad Request**\n  | Код ошибки | Описание | \n  |-|-| \n  | `wrong-data` | Неверные параметры запроса, неверные данные в параметрах запроса |\n  | `wrong-field-format` | Неверный формат поля запроса | \n  | `required-field-missing` | В запросе отсутствует обязательное поле |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "**Unauthorized**\n  | Код ошибки | Описание | \n  |-|-| \n  | `wrong-token` | Просроченный/некорректный токен авторизации |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "**Not Found**\n  | Код ошибки | Описание | \n  |-|-| \n  | `user-not-found` | Данный пользователь не зарегистирован в системе |\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Код ошибки и комментарий",
+                  "type": "object",
+                  "required": [
+                    "error_code",
+                    "comments",
+                    "additional_info"
+                  ],
+                  "properties": {
+                    "error_code": {
+                      "description": "Код ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "comments": {
+                      "description": "Описание ошибки",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "additional_info": {
+                      "description": "Дополнительная информация для фронта",
+                      "type": "string",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "token"
+      }
+    }
+  }
+}
